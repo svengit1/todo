@@ -10,6 +10,7 @@ all_tasks_link.addEventListener("click", all_tasks_link_handler)
 active_tasks_link.addEventListener("click", active_tasks_link_handler)
 completed_tasks_link.addEventListener("click", completed_tasks_link_handler)
 const el = document.getElementById("task_list")
+
 new_task_input_box.addEventListener("keypress", (event)=> {
     if (event.keyCode === 13) { // key code of the keybord key
       event.preventDefault();
@@ -60,7 +61,6 @@ function select_all_handler(){
     if (select_all_bool){
         elements1.forEach(element => {
             element.checked = true;
-
             });
         task_array.forEach(task => {
             task.compleated = true
@@ -122,42 +122,64 @@ function get_uniqe_id_part(id){
     return unique_part
 }
 
+function create_input_group_div(task){
+    let div = document.createElement("div")
+    div.setAttribute("class", "input-group mb-3")
+    div.setAttribute("title", "task_list_item")
+    div.setAttribute("id", "group-" + task.uid.toString())
+    return div
+}
+
+function create_input_group_text_div(){
+    let div = document.createElement("div")
+    div.setAttribute("class", "input-group-text")
+    return div
+}
+
+function create_input_check_box(task){
+    let check_box = document.createElement("input")
+    check_box.setAttribute("class", "form-check-input mt-0")
+    check_box.setAttribute("type", "checkbox")
+
+    if (task.compleated === true){
+        check_box.setAttribute("checked", true)
+    }
+    check_box.setAttribute("id", "checkbox-" + task.uid.toString())
+    return check_box
+}
+
+function create_input_text(task){
+    let text = document.createElement("input")
+    text.setAttribute("class", "form-control")
+    text.setAttribute("type", "text")
+    text.setAttribute("value", task.task)
+    text.setAttribute("id", "text-" + task.uid.toString())
+    return text
+
+}
+
+function create_delete_btn(task){
+    let btn = document.createElement("button")
+    btn.setAttribute("class", "btn btn-outline-secondary")
+    btn.style.display = "none"
+    btn.setAttribute("id", "button-" + task.uid.toString())
+    btn.innerHTML = "Delete"
+    return btn
+}
+
 function add_tasks_to_window(tasks){
     el.textContent = ""
     for (task of tasks){
-        const input_group_div = document.createElement("div");
-        input_group_div.setAttribute("class", "input-group mb-3")
-        input_group_div.setAttribute("title", "task_list_item")
-        input_group_div.setAttribute("id", "group-" + task.uid.toString())
-    
-        const input_group_text_div = document.createElement("div")
-        input_group_text_div.setAttribute("class", "input-group-text")
-    
-        const input_check_box = document.createElement("input")
-        input_check_box.setAttribute("class", "form-check-input mt-0")
-        input_check_box.setAttribute("type", "checkbox")
-
-        if (task.compleated === true){
-            input_check_box.setAttribute("checked", true)
-        }
-        input_check_box.setAttribute("id", "checkbox-" + task.uid.toString())
+        const input_group_div = create_input_group_div(task)
+        const input_group_text_div = create_input_group_text_div() 
+        const input_check_box = create_input_check_box(task)
         input_group_text_div.appendChild(input_check_box)
         input_group_div.appendChild(input_group_text_div)
-    
-        const input_text = document.createElement("input")
-        input_text.setAttribute("class", "form-control")
-        input_text.setAttribute("type", "text")
-        input_text.setAttribute("value", task.task)
-        input_text.setAttribute("id", "text-" + task.uid.toString())
-        const delete_btn = document.createElement("button")
-        delete_btn.setAttribute("class", "btn btn-outline-secondary")
-        delete_btn.style.display = "none"
-        delete_btn.setAttribute("id", "button-" + task.uid.toString())
-        delete_btn.innerHTML = "Delete"
+        const input_text = create_input_text(task)
+        const delete_btn = create_delete_btn(task)
         input_group_div.appendChild(input_text)
         input_group_div.appendChild(delete_btn)
         el.appendChild(input_group_div)
-
         input_check_box.addEventListener("change", 
         function() {
             if (input_check_box.checked === true){
