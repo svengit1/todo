@@ -7,8 +7,16 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     </head>
     <body>
+        <style>
+            #title {
+                text-align: center;
+                color: rgb(233, 218, 217);
+                font-size: 100px;
+                font-family: Poppins;
+            }
+        </style>
         <div class="container col-5" id="main">
-            <p class="text-center" style="color:rgb(233, 218, 217);font-size:100px;font-family: Poppins;">Todos</p>
+            <p class="text-center" id="title">Todos</p>
             <div class="input-group mb-3" id="new_task">
                 <button class="btn btn-outline-secondary" type="button" id="select_all_btn">Select all</button>
                 <input id="new_task_input_box" type="text" class="form-control" placeholder="What needs to be done?" aria-label="Example text with button addon" aria-describedby="button-addon1">
@@ -39,7 +47,7 @@
         
 
         <p style="font-size:10px" class="text-center">Double-click to edit</p>
-        <script type="text/javascript" src="index.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="index.js"></script>
     </body>
 </html>

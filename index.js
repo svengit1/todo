@@ -1,17 +1,20 @@
-const new_task_input_box = document.getElementById("new_task_input_box");
+const page_elements = {}
+page_elements.new_task_input_box = document.getElementById("new_task_input_box");
+page_elements.select_all_btn = document.getElementById("select_all_btn")
+page_elements.all_tasks_link = document.getElementById("all_tasks")
+page_elements.active_tasks_link = document.getElementById("all_active_tasks")
+page_elements.completed_tasks_link = document.getElementById("all_completed_tasks")
+
 let task_array = []
-const select_all_btn = document.getElementById("select_all_btn")
-select_all_btn.addEventListener("click", select_all_handler)
 let select_all_bool = true
-const all_tasks_link = document.getElementById("all_tasks")
-const active_tasks_link = document.getElementById("all_active_tasks")
-const completed_tasks_link = document.getElementById("all_completed_tasks")
-all_tasks_link.addEventListener("click", all_tasks_link_handler)
-active_tasks_link.addEventListener("click", active_tasks_link_handler)
-completed_tasks_link.addEventListener("click", completed_tasks_link_handler)
+
+page_elements.select_all_btn.addEventListener("click", select_all_handler)
+page_elements.all_tasks_link.addEventListener("click", all_tasks_link_handler)
+page_elements.active_tasks_link.addEventListener("click", active_tasks_link_handler)
+page_elements.completed_tasks_link.addEventListener("click", completed_tasks_link_handler)
 const el = document.getElementById("task_list")
 
-new_task_input_box.addEventListener("keypress", (event)=> {
+page_elements.new_task_input_box.addEventListener("keypress", (event)=> {
     if (event.keyCode === 13) { // key code of the keybord key
       event.preventDefault();
     enter_key_handler()
@@ -19,150 +22,112 @@ new_task_input_box.addEventListener("keypress", (event)=> {
   });
 
 function enter_key_handler(){
-    if (new_task_input_box.value){
-        task_array.push({"task": new_task_input_box.value, "compleated": false, "uid": generateUID()})
-        new_task_input_box.value = ""
+    if (page_elements.new_task_input_box.value){
+        task_array.push({"task": page_elements.new_task_input_box.value, "completed": false, "uid": generateUID()})
+        page_elements.new_task_input_box.value = ""
         add_tasks_to_window(task_array)   
     }
 }
 
-function find_tasks(finished_bool){
-    let task_list = []
-    let tasks = document.querySelectorAll('input[type="checkbox"]')
-    tasks.forEach(element => {
-        if (element.checked === finished_bool){
-            task_list.push(element.id[element.id.length - 1])
-        }
-      });
-    return task_list
-}
 function all_tasks_link_handler(){
-    document.getElementById("all_completed_tasks").setAttribute("class", "nav-link")
-    document.getElementById("all_active_tasks").setAttribute("class", "nav-link")
-    document.getElementById("all_tasks").setAttribute("class", "nav-link active")
+    set_active_task_group("all")
     add_tasks_to_window(task_array)
 }
 function active_tasks_link_handler(){
-    document.getElementById("all_completed_tasks").setAttribute("class", "nav-link")
-    document.getElementById("all_active_tasks").setAttribute("class", "nav-link active")
-    document.getElementById("all_tasks").setAttribute("class", "nav-link")
-    add_tasks_to_window(task_array.filter(task => task.compleated === false))
+    set_active_task_group("active")
+    add_tasks_to_window(task_array.filter(task => task.completed === false))
 }
 
 function completed_tasks_link_handler(){
-    document.getElementById("all_completed_tasks").setAttribute("class", "nav-link active")
-    document.getElementById("all_active_tasks").setAttribute("class", "nav-link")
-    document.getElementById("all_tasks").setAttribute("class", "nav-link")
-    add_tasks_to_window(task_array.filter(task => task.compleated === true))
+    set_active_task_group("completed")
+    add_tasks_to_window(task_array.filter(task => task.completed === true))
 }
 
 function select_all_handler(){
-    let elements1 = document.querySelectorAll('input[type="checkbox"]');
     if (select_all_bool){
-        elements1.forEach(element => {
-            element.checked = true;
-            });
-        task_array.forEach(task => {
-            task.compleated = true
-        })
-        select_all_bool = false
-        select_all_btn.innerHTML = "Unselect"
+        switch_task_completion(select_all_bool)
     } else{
-        console.log("unselect")
-        elements1.forEach(element => {
-            element.checked = false;
-            });
-        task_array.forEach(task => {
-            task.compleated = false
-        })
-        select_all_bool = true
-        select_all_btn.innerHTML = "Select all"
+        switch_task_completion(select_all_bool)
     }
 }
 
-function generateUID() {
-    var firstPart = (Math.random() * 46656) | 0;
-    var secondPart = (Math.random() * 46656) | 0;
-    firstPart = ("000" + firstPart.toString(36)).slice(-3);
-    secondPart = ("000" + secondPart.toString(36)).slice(-3);
-    return firstPart + secondPart;
+function switch_task_completion(bool){
+    let elements1 = document.querySelectorAll('input[type="checkbox"]');
+    elements1.forEach(element => {
+        element.checked = bool;
+        });
+    task_array.forEach(task => {
+        task.completed = bool
+    })
+    select_all_bool = !bool
+    if (bool){
+        page_elements.select_all_btn.innerHTML = "Unselect"
+    } else{
+        page_elements.select_all_btn.innerHTML = "Select all"
+    }
+    
+}
+function uidPart(){
+    var part = (Math.random() * 46656) | 0;
+    part = ("000" + part.toString(36)).slice(-3);
+    return part
 }
 
+function generateUID() {
+    return uidPart() + uidPart();
+}
 
-function checkbox_event_handler(id){
-    checkbox = document.getElementById(id)
-    if (checkbox.checked === true){
-        for (task of task_array){
-            if (task.uid === get_uniqe_id_part(id)){
-                task.compleated = true
-            }
-        }
+function set_active_task_group(group){
+    document.getElementById("all_completed_tasks").setAttribute("class", "nav-link")
+    document.getElementById("all_active_tasks").setAttribute("class", "nav-link")
+    document.getElementById("all_tasks").setAttribute("class", "nav-link")
+    if (group === "completed"){
+        document.getElementById("all_completed_tasks").setAttribute("class", "nav-link active")
+    } else if (group === "active"){
+        document.getElementById("all_active_tasks").setAttribute("class", "nav-link active")
     } else{
-        for (task of task_array){
-            if (task.uid === get_uniqe_id_part(id)){
-                task.compleated = false
-            }
-        }
+        document.getElementById("all_tasks").setAttribute("class", "nav-link active")
     }
 }
 
 function get_uniqe_id_part(id){
-    unique_part = ""
-    store = false
-    for (var i = 0; i < id.length; i++) {
-        if (id.charAt(i) === "-"){
-            store = true
-        }
-        if (store){
-            if (id.charAt(i) !== "-"){
-                unique_part += id.charAt(i)
-            }
-        }
-      }
-    return unique_part
+    return id.split('-')[1]
 }
-
+function create_element(tag_name, attributes_of_element){
+    let element = document.createElement(tag_name)
+    for (attribute of attributes_of_element){
+        element.setAttribute(attribute[0], attribute[1])
+    }
+    return element
+}
 function create_input_group_div(task){
-    let div = document.createElement("div")
-    div.setAttribute("class", "input-group mb-3")
-    div.setAttribute("title", "task_list_item")
-    div.setAttribute("id", "group-" + task.uid.toString())
+    div = create_element("div", [["class", "input-group mb-3"], ["title", "task_list_item"], ["id", "group-" + task.uid.toString()]])
     return div
 }
 
 function create_input_group_text_div(){
-    let div = document.createElement("div")
-    div.setAttribute("class", "input-group-text")
+    let div = create_element("div", [["class", "input-group-text"]])
     return div
 }
 
 function create_input_check_box(task){
-    let check_box = document.createElement("input")
-    check_box.setAttribute("class", "form-check-input mt-0")
-    check_box.setAttribute("type", "checkbox")
-
-    if (task.compleated === true){
+    let check_box = create_element("input", [["class", "form-check-input mt-0"], ["type", "checkbox"], ["id", "checkbox-" + task.uid.toString()]])
+    if (task.completed === true){
         check_box.setAttribute("checked", true)
     }
-    check_box.setAttribute("id", "checkbox-" + task.uid.toString())
+    
     return check_box
 }
 
 function create_input_text(task){
-    let text = document.createElement("input")
-    text.setAttribute("class", "form-control")
-    text.setAttribute("type", "text")
-    text.setAttribute("value", task.task)
-    text.setAttribute("id", "text-" + task.uid.toString())
+    let text = create_element("input", [["class", "form-control"], ["type", "text"], ["value", task.task], ["id", "text-" + task.uid.toString()]])
     return text
 
 }
 
 function create_delete_btn(task){
-    let btn = document.createElement("button")
-    btn.setAttribute("class", "btn btn-outline-secondary")
+    let btn = create_element("button", [["class", "btn btn-outline-secondary"], ["id", "button-" + task.uid.toString()]])
     btn.style.display = "none"
-    btn.setAttribute("id", "button-" + task.uid.toString())
     btn.innerHTML = "Delete"
     return btn
 }
@@ -185,13 +150,13 @@ function add_tasks_to_window(tasks){
             if (input_check_box.checked === true){
                 for (task of task_array){
                     if (task.uid === get_uniqe_id_part(input_check_box.id)){
-                        task.compleated = true
+                        task.completed = true
                     }
                 }
             } else{
                 for (task of task_array){
                     if (task.uid === get_uniqe_id_part(input_check_box.id)){
-                        task.compleated = false
+                        task.completed = false
                     }
                 }
             }
